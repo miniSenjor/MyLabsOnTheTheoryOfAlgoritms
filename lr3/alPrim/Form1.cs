@@ -49,22 +49,38 @@ namespace alPrim
                         else graph[i, j] = 0;
                 }
 
-            for (int i = 1; i < graph.GetLength(0); i++)
+            for (int i = 0; i < graph.GetLength(0); i++)
             {
-                int[] mas = new int[graph.GetLength(0)-i];
-                for (int j = i; j < graph.GetLength(1); j++)
-                    mas[j - i] = graph[i, j];
-
+                int[] strFromGraph = new int[graph.GetLength(0)-i-1];
+                for (int j = i+1; j < graph.GetLength(1); j++)
+                {
+                    strFromGraph[j - i-1] = graph[i, j];
+                    //Console.Write(strFromGraph[j-i-1]+" ");
+                }
+                //Console.WriteLine();
                 int min=int.MaxValue;
-                for (int j=0;j<mas.Length;j++)
-                    if (mas[j] != 0 && mas[j]<min)
-                        min = mas[j];
+                for (int j=0;j<strFromGraph.Length;j++)
+                    if (strFromGraph[j] != 0 && strFromGraph[j]<min)
+                        min = strFromGraph[j];
 
-                for (int j=0;j<mas.Length;j++)
-                    if (mas[j] > min)
-                        mas[j] = 0;
+                for (int j=0;j<strFromGraph.Length;j++)
+                {
+                    if (strFromGraph[j] > min)
+                    {
+                        strFromGraph[j] = 0;
+                    }
+                    //Console.Write(strFromGraph[j]+" ");
+                }
+                //Console.WriteLine();
+
+                for(int j=0; j<strFromGraph.Length;j++)
+                {
+                    graph[i,j+i+1] = strFromGraph[j];
+                    //graph[j+1,i] = strFromGraph[j];//не получается вывести массив под главной диагональю
+                }
+                        //graph[i,j] = strFromGraph[j];
                 /*for (int j=i-1;j<graph.GetLength(1);j++)
-                    graph[j, i] = mas[j-i+1];*/
+                    graph[j, i] = strFromGraph[j-i+1];*/
             }
             for (int i = 0; i < graph.GetLength(0); i++)
                 for (int j = 0; j < graph.GetLength(1); j++)
