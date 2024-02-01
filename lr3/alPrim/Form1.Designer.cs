@@ -73,7 +73,7 @@ namespace alPrim
             this.dataGridPrim.Name = "dataGridPrim";
             this.dataGridPrim.RowHeadersWidth = 51;
             this.dataGridPrim.RowTemplate.Height = 24;
-            this.dataGridPrim.Size = new System.Drawing.Size(378, 271);
+            this.dataGridPrim.Size = new System.Drawing.Size(474, 271);
             this.dataGridPrim.TabIndex = 3;
             // 
             // btnCalc
