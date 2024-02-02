@@ -95,6 +95,7 @@ namespace alPrim
             this.chBxDirection.TabIndex = 5;
             this.chBxDirection.Text = "есть направление";
             this.chBxDirection.UseVisualStyleBackColor = true;
+            this.chBxDirection.Visible = false;
             // 
             // Form1
             // 
