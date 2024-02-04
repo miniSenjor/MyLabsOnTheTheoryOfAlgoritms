@@ -36,13 +36,13 @@ namespace alPrim
             }
             catch
             {
-                MessageBox.Show("Введите кол-во вершин графа");
+                MessageBox.Show("Некоректный ввод");
             }
         }
 
         private void btnCalc_Click(object sender, EventArgs e)
         {
-            int[,] graph = new int[numVertex,numVertex];
+            int[,] graph = new int[numVertex, numVertex];
             for (int i=0; i<graph.GetLength(0); i++)
                 for (int j=0; j<graph.GetLength(1); j++)
                 {
@@ -51,83 +51,78 @@ namespace alPrim
                         else graph[i, j] = 0;
                 }
 
-            int sumMinRow = 0;
-            int sumMinCol = 0;
+            
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = 0; j < graph.GetLength(1); j++)
+                {
+                    if (graph[i, j] > graph[j,i] && graph[j,i]!=0)
+                        graph[i,j] = graph[j,i];
+                    else if (graph[i,j]!=0) 
+                        graph[j,i] = graph[i,j];
+                }
 
-            for (int i = 0; i < graph.GetLength(0)-1; i++)
+            
+            long sumAbove = 0;
+            long sumUnder = 0;
+
+            for (int i =0; i < graph.GetLength(0)-1; i++)
             {
-                int minFromRow=int.MaxValue;
-                int countMinFromRow = 0;
-                int[] rowFromGraph = new int[graph.GetLength(0)-i-1];
-                for (int j = i+1; j < graph.GetLength(1); j++)
+                int[] arrAboveFromGraph = new int[numVertex - i - 1];
+                int[] arrUnderDiagonalFromGraph = new int[numVertex - i - 1];
+                int minAbove = int.MaxValue;
+                int minUnder = int.MaxValue;
+                for (int j = 0; j < graph.GetLength(1)-i-1; j++)
                 {
-                    rowFromGraph[j - i-1] = graph[i, j];
-                    if (rowFromGraph[j - i - 1] == minFromRow)
-                        countMinFromRow++;
-                    if (rowFromGraph[j-i-1] != 0 && rowFromGraph[j-i-1]<minFromRow)
+                    arrAboveFromGraph[j] = graph[i, j + i + 1];
+                    arrUnderDiagonalFromGraph[j] = graph[numVertex-i-1, j];
+
+                    if (graph[i, j + i + 1] < minAbove && graph[i,j + i + 1]!=0)
+                        minAbove = graph[i, j + i + 1];
+                    if (graph[numVertex-i-1,j]<minUnder && graph[numVertex-i-1,j]!=0)
+                        minUnder = graph[numVertex-i-1,j];
+                }
+                sumAbove += minAbove;
+                sumUnder += minUnder;
+
+                bool isFirstMinA=true;
+                bool isFirstMinU=true;
+                for (int j = 0;j < graph.GetLength(1)-i-1;j++)
+                {
+                    if (arrAboveFromGraph[j] > minAbove)
+                        arrAboveFromGraph[j] = 0;
+                    if (!isFirstMinA && arrAboveFromGraph[j] == minAbove)
                     {
-                        minFromRow = rowFromGraph[j - i - 1];
-                        countMinFromRow = 1;
+                        isFirstMinA=false;
+                        arrAboveFromGraph[j] = 0;
+                    }
+                    if (arrUnderDiagonalFromGraph[j] > minUnder)
+                        arrUnderDiagonalFromGraph[j] = 0;
+                    if (!isFirstMinU && arrUnderDiagonalFromGraph[j] == minUnder)
+                    {
+                        isFirstMinU = false;
+                        arrUnderDiagonalFromGraph[j]=0;
                     }
                 }
-                sumMinRow += minFromRow;
 
-                int minFromCol=int.MaxValue;
-                int countMinFromCol = 0;
-                int[] colFromGraph = new int[i + 1];
-                for (int j = 0; j < colFromGraph.Length; j++)
+                for (int j = 0;j<graph.GetLength(1)-i-1; j++)
                 {
-                    colFromGraph[j] = graph[j, i + 1];
-                    if (colFromGraph[j] == minFromCol)
-                        countMinFromCol++;
-                    if (colFromGraph[j] != 0 && colFromGraph[j]<minFromCol)
-                    {
-                        minFromCol = colFromGraph[j];
-                        countMinFromCol = 1;
-                    }
+                    graph[i, j + i + 1] = arrAboveFromGraph[j];
+                    graph[numVertex - i - 1, j] = arrUnderDiagonalFromGraph[j];
                 }
-                sumMinCol += minFromRow;
-
-                
-                    /*for (int j=0;j<rowFromGraph.Length;j++)
-                    {
-                        if (rowFromGraph[j] > minFromRow)
-                            rowFromGraph[j] = 0;
-                        if (rowFromGraph[j] == minFromRow && countMinFromRow > 1)
-                        {
-                            rowFromGraph[j] = 0;
-                            countMinFromRow--;
-                        }
-                    }
-                    for (int j=0; j<rowFromGraph.Length;j++)
-                    {
-                        graph[i,j+i+1] = rowFromGraph[j];
-                        graph[j+1+i,i] = rowFromGraph[j];
-                    }*/
-
-
-                    for (int j = 0; j < colFromGraph.Length; j++)
-                    {
-                        if (colFromGraph[j] > minFromCol)
-                            colFromGraph[j] = 0;
-                        if (colFromGraph[j] == minFromCol && countMinFromCol > 1)
-                        {
-                            colFromGraph[j] = 0;
-                            countMinFromCol--;
-                        }
-                    }
-                    for (int j = 0; j < colFromGraph.Length; j++)
-                    {
-                        int c = colFromGraph[j];
-                        graph[i, j + i + 1] = c;//над главной диагональю
-                        graph[j + 1 + i, i] = c;
-                    }
             }
+
+            if (sumAbove<sumUnder)
+                for (int i = 0; i < graph.GetLength(0); i++)
+                    for (int j = i + 1; j < graph.GetLength(1); j++)
+                        graph[j,i] = graph[i,j];
+            else for (int i = 0; i < graph.GetLength(0); i++)
+                    for (int j = i + 1; j < graph.GetLength(1); j++)
+                        graph[i, j] = graph[j, i];
 
             for (int i = 0; i < graph.GetLength(0); i++)
                 for (int j = 0; j < graph.GetLength(1); j++)
                     dataGridPrim.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
-
+            //Console.WriteLine(sumMinCol+" "+sumMinRow);
             /*for (int i=0;i<graph.GetLength(0);i++)
             {
                 for (int j=0;j<graph.GetLength(1);j++)
