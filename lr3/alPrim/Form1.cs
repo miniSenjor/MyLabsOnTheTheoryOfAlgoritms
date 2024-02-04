@@ -25,7 +25,7 @@ namespace alPrim
                     {
                         HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
                         Name = "Column" + Convert.ToString(i),
-                        ValueType = typeof(int)
+                        ValueType = typeof(string)
                     });
                     dataGridPrim.Columns[i].Width = 35;
                     if (i > 0) dataGridPrim.Rows.Add(Convert.ToChar(64 + i).ToString());
@@ -47,9 +47,9 @@ namespace alPrim
                 for (int j=0; j<graph.GetLength(1); j++)
                 {
                     string cell = dataGridPrim.Rows[i].Cells[j+1].Value.ToString();
-                    if (cell != "" && i!=j) graph[i, j] = int.Parse(cell);
-                        else graph[i, j] = 0;
-                }
+                    try { if (cell != "" && i != j) graph[i, j] = int.Parse(cell); }
+                    catch { graph[i, j] = 0; }
+                    }
 
             
             for (int i = 0; i < graph.GetLength(0); i++)
