@@ -121,10 +121,10 @@ namespace alPrim
                 for (int j = 0; j < graph.GetLength(1); j++)
                     dataGridView1.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
 
-            generateResGraph2();
+            /*generateResGraph2();
             for (int i = 0; i < graph.GetLength(0); i++)
                 for (int j = 0; j < graph.GetLength(1); j++)
-                    dataGridView2.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
+                    dataGridView2.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();*/
             //Console.WriteLine(sumMinCol+" "+sumMinRow);
             /*for (int i=0;i<graph.GetLength(0);i++)
             {
@@ -189,30 +189,30 @@ namespace alPrim
 
         private void generateResGraph2()
         {
-            try
-            {
+            
+        }
 
-                dataGridView1.Rows.Clear();
-                dataGridView1.Columns.Clear();
-                for (int i = 0; i < numVertex + 1; i++)
-                {
-                    dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
-                    {
-                        HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
-                        Name = "Column" + Convert.ToString(i),
-                        ValueType = typeof(string)
-                    });
-                    dataGridView1.Columns[i].Width = 35;
-                    if (i > 0) dataGridView1.Rows.Add(Convert.ToChar(64 + i).ToString());
-                }
-                for (int i = 0; i < numVertex; i++)
-                    for (int j = 0; j < numVertex; j++)
-                        dataGridView1.Rows[i].Cells[j + 1].Value = "";
-            }
-            catch
+        private void sortArr(int[,] graph)
+        {
+            bool isStrEmpty=true;
+            int col;
+            for (int i = 0;i < graph.GetLength(0);i++)
             {
-                MessageBox.Show("Некоректный ввод");
+                isStrEmpty=true;
+                for(int j = i+1;j < graph.GetLength(1);j++)
+                {
+                    if (graph[i,j]!=0) isStrEmpty=false;
+                    break;
+                }
+                if (isStrEmpty)
+                {
+                    col = i;
+                    break;
+                }
             }
+            if (!isStrEmpty)
+                return;
+
         }
     }
 }
