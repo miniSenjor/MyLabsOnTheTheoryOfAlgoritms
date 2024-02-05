@@ -18,7 +18,7 @@ namespace alPrim
             {
                 dataGridPrim.Rows.Clear();
                 dataGridPrim.Columns.Clear();
-                numVertex = int.Parse(txtNumberVertex.Text);
+                numVertex = int.Parse(txtQuantityVertex.Text);
                 for (int i = 0; i < numVertex + 1; i++)
                 {
                     dataGridPrim.Columns.Add(new DataGridViewTextBoxColumn()
@@ -49,7 +49,7 @@ namespace alPrim
                     string cell = dataGridPrim.Rows[i].Cells[j+1].Value.ToString();
                     try { if (cell != "" && i != j) graph[i, j] = int.Parse(cell); }
                     catch { graph[i, j] = 0; }
-                    }
+                }
 
             
             for (int i = 0; i < graph.GetLength(0); i++)
@@ -111,17 +111,20 @@ namespace alPrim
                 }
             }
 
-            if (sumAbove<sumUnder)
-                for (int i = 0; i < graph.GetLength(0); i++)
-                    for (int j = i + 1; j < graph.GetLength(1); j++)
-                        graph[j,i] = graph[i,j];
-            else for (int i = 0; i < graph.GetLength(0); i++)
-                    for (int j = i + 1; j < graph.GetLength(1); j++)
-                        graph[i, j] = graph[j, i];
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = i + 1; j < graph.GetLength(1); j++)
+                    if ( sumAbove<sumUnder) graph[j,i] = graph[i,j];
+                    else graph[i, j] = graph[j, i];
 
+            generateResGraph1();
             for (int i = 0; i < graph.GetLength(0); i++)
                 for (int j = 0; j < graph.GetLength(1); j++)
-                    dataGridPrim.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
+                    dataGridView1.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
+
+            generateResGraph2();
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = 0; j < graph.GetLength(1); j++)
+                    dataGridView2.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
             //Console.WriteLine(sumMinCol+" "+sumMinRow);
             /*for (int i=0;i<graph.GetLength(0);i++)
             {
@@ -129,6 +132,87 @@ namespace alPrim
                     Console.Write(graph[i,j]+" ");
                 Console.WriteLine();
             }*///Вывод массива
+        }
+
+        private void btnMirror_Click(object sender, EventArgs e)
+        {
+            int[,] graph = new int[numVertex, numVertex];
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = 0; j < graph.GetLength(1); j++)
+                {
+                    string cell = dataGridPrim.Rows[i].Cells[j + 1].Value.ToString();
+                    try { if (cell != "" && i != j) graph[i, j] = int.Parse(cell); }
+                    catch { graph[i, j] = 0; }
+                }
+
+
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = 0; j < graph.GetLength(1); j++)
+                {
+                    if (graph[i, j] > graph[j, i] && graph[j, i] != 0)
+                        graph[i, j] = graph[j, i];
+                    else if (graph[i, j] != 0)
+                        graph[j, i] = graph[i, j];
+                }
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = 0; j < graph.GetLength(1); j++)
+                    dataGridPrim.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
+        }
+
+        private void generateResGraph1()
+        {
+            try
+            {
+
+                dataGridView1.Rows.Clear();
+                dataGridView1.Columns.Clear();
+                for (int i = 0; i < numVertex + 1; i++)
+                {
+                    dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                    {
+                        HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
+                        Name = "Column" + Convert.ToString(i),
+                        ValueType = typeof(string)
+                    });
+                    dataGridView1.Columns[i].Width = 35;
+                    if (i > 0) dataGridView1.Rows.Add(Convert.ToChar(64 + i).ToString());
+                }
+                for (int i = 0; i < numVertex; i++)
+                    for (int j = 0; j < numVertex; j++)
+                        dataGridView1.Rows[i].Cells[j + 1].Value = "";
+            }
+            catch
+            {
+                MessageBox.Show("Некоректный ввод");
+            }
+        }
+
+        private void generateResGraph2()
+        {
+            try
+            {
+
+                dataGridView1.Rows.Clear();
+                dataGridView1.Columns.Clear();
+                for (int i = 0; i < numVertex + 1; i++)
+                {
+                    dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                    {
+                        HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
+                        Name = "Column" + Convert.ToString(i),
+                        ValueType = typeof(string)
+                    });
+                    dataGridView1.Columns[i].Width = 35;
+                    if (i > 0) dataGridView1.Rows.Add(Convert.ToChar(64 + i).ToString());
+                }
+                for (int i = 0; i < numVertex; i++)
+                    for (int j = 0; j < numVertex; j++)
+                        dataGridView1.Rows[i].Cells[j + 1].Value = "";
+            }
+            catch
+            {
+                MessageBox.Show("Некоректный ввод");
+            }
         }
     }
 }
