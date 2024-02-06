@@ -133,7 +133,7 @@ namespace alPrim
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(372, 59);
+            this.label2.Location = new System.Drawing.Point(735, 59);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(67, 17);
             this.label2.TabIndex = 8;
@@ -151,7 +151,7 @@ namespace alPrim
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(735, 59);
+            this.label4.Location = new System.Drawing.Point(372, 59);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(47, 17);
             this.label4.TabIndex = 11;
@@ -176,6 +176,7 @@ namespace alPrim
             this.txtNumberVertex.Name = "txtNumberVertex";
             this.txtNumberVertex.Size = new System.Drawing.Size(48, 22);
             this.txtNumberVertex.TabIndex = 12;
+            this.txtNumberVertex.Text = "1";
             // 
             // label5
             // 
