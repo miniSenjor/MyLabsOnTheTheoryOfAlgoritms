@@ -149,11 +149,10 @@ namespace alPrim
                     dataGridView1.Rows[j].Cells[i + 1].Value = graph1[i, j].ToString();
                 }
 
-            generateResGraph2();
-            int[,] graph2 = new int[numVertex, numVertex];
-            for (int i = 0; i < graph2.GetLength(0); i++)
-                for (int j = 0; j < graph2.GetLength(1); j++)
-                    dataGridView2.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
+            /*generateResGraph2();
+            for (int i = 0; i < graph.GetLength(0); i++)
+                for (int j = 0; j < graph.GetLength(1); j++)
+                    dataGridView2.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();*/
             //Console.WriteLine(sumMinCol+" "+sumMinRow);
             /*for (int i=0;i<graph.GetLength(0);i++)
             {
@@ -218,93 +217,30 @@ namespace alPrim
 
         private void generateResGraph2()
         {
-            try
-            {
-
-                dataGridView2.Rows.Clear();
-                dataGridView2.Columns.Clear();
-                for (int i = 0; i < numVertex + 1; i++)
-                {
-                    dataGridView2.Columns.Add(new DataGridViewTextBoxColumn()
-                    {
-                        HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
-                        Name = "Column" + Convert.ToString(i),
-                        ValueType = typeof(string)
-                    });
-                    dataGridView2.Columns[i].Width = 35;
-                    if (i > 0) dataGridView2.Rows.Add(Convert.ToChar(64 + i).ToString());
-                }
-                for (int i = 0; i < numVertex; i++)
-                    for (int j = 0; j < numVertex; j++)
-                        dataGridView2.Rows[i].Cells[j + 1].Value = "";
-            }
-            catch
-            {
-                MessageBox.Show("Некоректный ввод");
-            }
+            
         }
 
-        private List<Edge> alPrim(List<Edge> notUsedEdges, List<int> usedVertex, List<int> notUsedVertex)
+        private void sortArr(int[,] graph)
         {
-            List<Edge> resultGraph = new List<Edge>();
-            try
+            bool isStrEmpty=true;
+            int col;
+            for (int i = 0;i < graph.GetLength(0);i++)
             {
-                int ckeckVertex = int.Parse(txtNumberVertex.Text) - 1;
-                if (ckeckVertex < numVertex && ckeckVertex > -1)
+                isStrEmpty=true;
+                for(int j = i+1;j < graph.GetLength(1);j++)
                 {
-                    usedVertex.Add(ckeckVertex);
-                    notUsedVertex.RemoveAt(usedVertex[0]);
+                    if (graph[i,j]!=0) isStrEmpty=false;
+                    break;
                 }
-                else
+                if (isStrEmpty)
                 {
-                    MessageBox.Show("Неверный ввод начальной вершины");
+                    col = i;
+                    break;
                 }
             }
-            catch
-            {
-                MessageBox.Show("Введите номер начальной вершины");
-            }
+            if (!isStrEmpty)
+                return;
 
-            while (notUsedVertex.Count > 0)
-            {
-                int nearEdge = -1;
-                for (int i = 0; i < notUsedEdges.Count; i++)
-                    if ((usedVertex.IndexOf(notUsedEdges[i].ver1) != -1 && notUsedVertex.IndexOf(notUsedEdges[i].ver2) != -1)
-                        || (usedVertex.IndexOf(notUsedEdges[i].ver2) != -1 && notUsedVertex.IndexOf(notUsedEdges[i].ver1) != -1))
-                    {
-                        if (nearEdge != -1)
-                        {
-                            if (notUsedEdges[i].length < notUsedEdges[nearEdge].length)
-                                nearEdge = i;
-                        }
-                        else nearEdge = i;
-                    }
-                if (notUsedVertex.IndexOf(notUsedEdges[nearEdge].ver1) != -1)
-                {
-                    usedVertex.Add(notUsedEdges[nearEdge].ver1);
-                    notUsedVertex.Remove(notUsedEdges[nearEdge].ver1);
-                }
-                else
-                {
-                    usedVertex.Add(notUsedEdges[nearEdge].ver2);
-                    notUsedVertex.Remove(notUsedEdges[nearEdge].ver2);
-                }
-                resultGraph.Add(notUsedEdges[nearEdge]);
-                notUsedEdges.RemoveAt(nearEdge);
-                Console.WriteLine(nearEdge);
-            }
-            return resultGraph;
-        }
-    }
-
-    public class Edge
-    {
-        public int ver1, ver2, length;
-        public Edge(int ver1, int ver2, int length)
-        {
-            this.ver1 = ver1;
-            this.ver2 = ver2;
-            this.length = length;
         }
     }
 }
