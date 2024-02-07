@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TreeView;
 
 namespace alPrim
 {
@@ -13,199 +12,105 @@ namespace alPrim
             InitializeComponent();
         }
 
-        public int numVertex;
+        public int countVertex;
 
-        private void btnChangeNumberVertex_Click(object sender, EventArgs e)
+        private void btnChangeCountVertex_Click(object sender, EventArgs e)
         {
             try
             {
-                dataGridPrim.Rows.Clear();
-                dataGridPrim.Columns.Clear();
-                numVertex = int.Parse(txtQuantityVertex.Text);
-                for (int i = 0; i < numVertex + 1; i++)
-                {
-                    dataGridPrim.Columns.Add(new DataGridViewTextBoxColumn()
-                    {
-                        HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
-                        Name = "Column" + Convert.ToString(i),
-                        ValueType = typeof(string),
-                });
-                    dataGridPrim.Columns[i].Width = 35;
-                    if (i > 0) dataGridPrim.Rows.Add(Convert.ToChar(64 + i).ToString());
-                }
-                for (int i = 0; i < numVertex; i++)
-                    for (int j = 0; j < numVertex; j++)
-                    {
-                        dataGridPrim.Rows[i].Cells[j + 1].Value = "";
-                        if (i == j) dataGridPrim.Rows[i].Cells[j + 1].Style.BackColor = Color.Coral;
-                    }
+                countVertex = int.Parse(txtCountVertex.Text);
+                if (countVertex > 1) generateDataGridView(dataGridBefore);
+                else MessageBox.Show("Введите больше вершин");
             }
-            catch
+            catch 
             {
-                MessageBox.Show("Некоректный ввод");
+                MessageBox.Show("Некоректный ввод числа вершин");
+            }
+        }
+
+        private void btnMirror_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                int[,] graph = new int[countVertex, countVertex];
+                for (int i = 0; i < graph.GetLength(0); i++)
+                    for (int j = 0; j < graph.GetLength(1); j++)
+                    {
+                        string cell = dataGridBefore.Rows[i].Cells[j + 1].Value.ToString();
+                        try { if (cell != "" && i != j) graph[i, j] = int.Parse(cell); }
+                        catch { graph[i, j] = 0; }
+                    }
+
+
+                for (int i = 0; i < graph.GetLength(0); i++)
+                    for (int j = 0; j < graph.GetLength(1); j++)
+                    {
+                        if (graph[i, j] > graph[j, i] && graph[j, i] != 0)
+                            graph[i, j] = graph[j, i];
+                        else if (graph[i, j] != 0)
+                            graph[j, i] = graph[i, j];
+                    }
+                for (int i = 0; i < graph.GetLength(0); i++)
+                    for (int j = 0; j < graph.GetLength(1); j++)
+                        dataGridBefore.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
+            }
+            catch 
+            {
+                if (txtNumberVertex.Text == "")
+                    MessageBox.Show("Не введен размер графа");
             }
         }
 
         private void btnCalc_Click(object sender, EventArgs e)
         {
-            int[,] graph = new int[numVertex, numVertex];
-            for (int i = 0; i < graph.GetLength(0); i++)
-                for (int j = 0; j < graph.GetLength(1); j++)
-                {
-                    string cell = dataGridPrim.Rows[i].Cells[j + 1].Value.ToString();
-                    try { if (cell != "" && i != j) graph[i, j] = int.Parse(cell); }
-                    catch { graph[i, j] = 0; }
-                }
-
-
-            
-            
-            /*long sumAbove = 0;
-            long sumUnder = 0;
-
-            for (int i =0; i < graph.GetLength(0)-1; i++)
-            {
-                int[] arrAboveFromGraph = new int[numVertex - i - 1];
-                int[] arrUnderDiagonalFromGraph = new int[numVertex - i - 1];
-                int minAbove = int.MaxValue;
-                int minUnder = int.MaxValue;
-                for (int j = 0; j < graph.GetLength(1)-i-1; j++)
-                {
-                    arrAboveFromGraph[j] = graph[i, j + i + 1];
-                    arrUnderDiagonalFromGraph[j] = graph[numVertex-i-1, j];
-
-                    if (graph[i, j + i + 1] < minAbove && graph[i,j + i + 1]!=0)
-                        minAbove = graph[i, j + i + 1];
-                    if (graph[numVertex-i-1,j]<minUnder && graph[numVertex-i-1,j]!=0)
-                        minUnder = graph[numVertex-i-1,j];
-                }
-                sumAbove += minAbove;
-                sumUnder += minUnder;
-
-                bool isFirstMinA=true;
-                bool isFirstMinU=true;
-                for (int j = 0;j < graph.GetLength(1)-i-1;j++)
-                {
-                    if (arrAboveFromGraph[j] > minAbove)
-                        arrAboveFromGraph[j] = 0;
-                    if (!isFirstMinA && arrAboveFromGraph[j] == minAbove)
-                    {
-                        isFirstMinA=false;
-                        arrAboveFromGraph[j] = 0;
-                    }
-                    if (arrUnderDiagonalFromGraph[j] > minUnder)
-                        arrUnderDiagonalFromGraph[j] = 0;
-                    if (!isFirstMinU && arrUnderDiagonalFromGraph[j] == minUnder)
-                    {
-                        isFirstMinU = false;
-                        arrUnderDiagonalFromGraph[j]=0;
-                    }
-                }
-
-                for (int j = 0;j<graph.GetLength(1)-i-1; j++)
-                {
-                    graph[i, j + i + 1] = arrAboveFromGraph[j];
-                    graph[numVertex - i - 1, j] = arrUnderDiagonalFromGraph[j];
-                }
-            }
-
-            for (int i = 0; i < graph.GetLength(0); i++)
-                for (int j = i + 1; j < graph.GetLength(1); j++)
-                    if ( sumAbove<sumUnder) graph[j,i] = graph[i,j];
-                    else graph[i, j] = graph[j, i];*/
-            
-
-            generateResGraph1();
+            generateDataGridView(dataGridView1);
             List<Edge> resultGraph1;
-            if (alPrim(graph, out resultGraph1) == -1)
+            if (alPrim(out resultGraph1) == -1)
                 return;
-            int[,] graph1 = new int[numVertex, numVertex];
             for (int i = 0; i < resultGraph1.Count; i++)
             {
                 int v1 = resultGraph1[i].ver1;
                 int v2 = resultGraph1[i].ver2;
-                graph1[v1, v2] = resultGraph1[i].length;
+                dataGridView1.Rows[v1].Cells[v2+1].Value = resultGraph1[i].length;
+                dataGridView1.Rows[v2].Cells[v1+1].Value = resultGraph1[i].length;
             }
-            for (int i = 0; i < graph1.GetLength(0); i++)
-                for (int j = i; j < graph1.GetLength(1); j++)
-                {
-                    dataGridView1.Rows[i].Cells[j + 1].Value = graph1[i, j].ToString();
-                    dataGridView1.Rows[j].Cells[i + 1].Value = graph1[i, j].ToString();
-                    if (i == j) dataGridView1.Rows[i].Cells[j + 1].Style.BackColor = Color.Coral;
-                }
+            dataGridView1.Visible = true; 
 
-            generateResGraph2();
-            List<Edge> resultGraph2;
-            alKrask(graph, out resultGraph2);
-            int[,] graph2 = new int[numVertex, numVertex];
+            generateDataGridView(dataGridView2);
+            List<Edge> resultGraph2 = alKrask();
             for (int i = 0; i < resultGraph2.Count; i++)
             {
                 int v1 = resultGraph2[i].ver1;
                 int v2 = resultGraph2[i].ver2;
-                graph2[v1, v2] = resultGraph2[i].length;
+                dataGridView2.Rows[v1].Cells[v2+1].Value = resultGraph2[i].length;
+                dataGridView2.Rows[v2].Cells[v1+1].Value = resultGraph2[i].length;
             }
-            for (int i = 0; i < graph2.GetLength(0); i++)
-                for (int j = i; j < graph2.GetLength(1); j++)
-                {
-                    dataGridView2.Rows[i].Cells[j + 1].Value = graph2[i, j].ToString();
-                    dataGridView2.Rows[j].Cells[i + 1].Value = graph2[i, j].ToString();
-                    if (i == j) dataGridView2.Rows[i].Cells[j + 1].Style.BackColor = Color.Coral;
-                }
-            //Console.WriteLine(sumMinCol+" "+sumMinRow);
-            /*for (int i=0;i<graph.GetLength(0);i++)
-            {
-                for (int j=0;j<graph.GetLength(1);j++)
-                    Console.Write(graph[i,j]+" ");
-                Console.WriteLine();
-            }*///Вывод массива
+            dataGridView2.Visible = true;
         }
 
-        private void btnMirror_Click(object sender, EventArgs e)
-        {
-            int[,] graph = new int[numVertex, numVertex];
-            for (int i = 0; i < graph.GetLength(0); i++)
-                for (int j = 0; j < graph.GetLength(1); j++)
-                {
-                    string cell = dataGridPrim.Rows[i].Cells[j + 1].Value.ToString();
-                    try { if (cell != "" && i != j) graph[i, j] = int.Parse(cell); }
-                    catch { graph[i, j] = 0; }
-                }
-
-
-            for (int i = 0; i < graph.GetLength(0); i++)
-                for (int j = 0; j < graph.GetLength(1); j++)
-                {
-                    if (graph[i, j] > graph[j, i] && graph[j, i] != 0)
-                        graph[i, j] = graph[j, i];
-                    else if (graph[i, j] != 0)
-                        graph[j, i] = graph[i, j];
-                }
-            for (int i = 0; i < graph.GetLength(0); i++)
-                for (int j = 0; j < graph.GetLength(1); j++)
-                    dataGridPrim.Rows[i].Cells[j + 1].Value = graph[i, j].ToString();
-        }
-
-        private void generateResGraph1()
+        private void generateDataGridView(DataGridView dataGridView)
         {
             try
             {
-
-                dataGridView1.Rows.Clear();
-                dataGridView1.Columns.Clear();
-                for (int i = 0; i < numVertex + 1; i++)
+                dataGridView.Rows.Clear();
+                dataGridView.Columns.Clear();
+                for (int i = 0; i < countVertex + 1; i++)
                 {
-                    dataGridView1.Columns.Add(new DataGridViewTextBoxColumn()
+                    dataGridView.Columns.Add(new DataGridViewTextBoxColumn()
                     {
                         HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
                         Name = "Column" + Convert.ToString(i),
                         ValueType = typeof(string)
                     });
-                    dataGridView1.Columns[i].Width = 35;
-                    if (i > 0) dataGridView1.Rows.Add(Convert.ToChar(64 + i).ToString());
+                    dataGridView.Columns[i].Width = 35;
+                    if (i > 0) dataGridView.Rows.Add(Convert.ToChar(64 + i).ToString());
                 }
-                for (int i = 0; i < numVertex; i++)
-                    for (int j = 0; j < numVertex; j++)
-                        dataGridView1.Rows[i].Cells[j + 1].Value = "";
+                for (int i = 0; i < countVertex; i++)
+                    for (int j = 0; j < countVertex; j++)
+                    {
+                        dataGridView.Rows[i].Cells[j + 1].Value = "";
+                        if (i == j) dataGridView.Rows[i].Cells[j + 1].Style.BackColor = Color.Coral;
+                    }
             }
             catch
             {
@@ -213,61 +118,42 @@ namespace alPrim
             }
         }
 
-        private void generateResGraph2()
+        void graphConvertToListEdge(ref List<Edge> notUsedEdges, ref List<int> notUsedVertex)
         {
-            try
-            {
-
-                dataGridView2.Rows.Clear();
-                dataGridView2.Columns.Clear();
-                for (int i = 0; i < numVertex + 1; i++)
-                {
-                    dataGridView2.Columns.Add(new DataGridViewTextBoxColumn()
-                    {
-                        HeaderText = i == 0 ? ("") : (Convert.ToChar(64 + i).ToString()),
-                        Name = "Column" + Convert.ToString(i),
-                        ValueType = typeof(string)
-                    });
-                    dataGridView2.Columns[i].Width = 35;
-                    if (i > 0) dataGridView2.Rows.Add(Convert.ToChar(64 + i).ToString());
-                }
-                for (int i = 0; i < numVertex; i++)
-                    for (int j = 0; j < numVertex; j++)
-                        dataGridView2.Rows[i].Cells[j + 1].Value = "";
-            }
-            catch
-            {
-                MessageBox.Show("Некоректный ввод");
-            }
-        }
-
-        private int alPrim(int[,] graph, out List<Edge> resultGraph)
-        {
-            List<Edge> notUsedEdges = new List<Edge>();
-            List<int> notUsedVertex = new List<int>();
-            List<int> usedVertex = new List<int>();
-            for (int i = 0; i < graph.GetLength(0); i++)
+            int aboveD, underD;
+            for (int i = 0; i < countVertex; i++)
             {
                 notUsedVertex.Add(i);
-                for (int j = i + 1; j < graph.GetLength(1); j++)
+                for (int j = i + 1; j < countVertex; j++)
                 {
-                    if (graph[i, j] > graph[j, i] && graph[j, i] != 0)
-                        graph[i, j] = graph[j, i];
-                    else if (graph[i, j] != 0)
-                        graph[j, i] = graph[i, j];
-                    if (graph[i, j] != 0)
+                    try { aboveD = int.Parse(dataGridBefore.Rows[i].Cells[j + 1].Value.ToString()); }
+                    catch { aboveD = 0; }
+                    try { underD = int.Parse(dataGridBefore.Rows[j].Cells[i+1].Value.ToString()); }
+                    catch { underD = 0; }
+
+                    if (aboveD>underD && underD>0)
+                        aboveD = underD;
+                    if (aboveD>0)
                     {
-                        Edge edge = new Edge(i, j, graph[i, j]);
+                        Edge edge = new Edge(i, j, aboveD);
                         notUsedEdges.Add(edge);
                     }
                 }
             }
+        }
+
+        private int alPrim(out List<Edge> resultGraph)
+        {
+            List<Edge> notUsedEdges = new List<Edge>();
+            List<int> notUsedVertex = new List<int>();
+            List<int> usedVertex = new List<int>();
+            graphConvertToListEdge(ref notUsedEdges, ref notUsedVertex);
 
             resultGraph = new List<Edge>();
             try
             {
                 int ckeckVertex = int.Parse(txtNumberVertex.Text) - 1;
-                if (ckeckVertex < numVertex && ckeckVertex > -1)
+                if (ckeckVertex < countVertex && ckeckVertex > -1)
                 {
                     usedVertex.Add(ckeckVertex);
                     notUsedVertex.RemoveAt(usedVertex[0]);
@@ -301,7 +187,7 @@ namespace alPrim
                     }
                 if (nearEdge == -1)
                 {
-                    MessageBox.Show("Ощибка ввода массива");
+                    MessageBox.Show("Ошибка ввода массива");
                     return -1;
                 }
                 if (notUsedVertex.IndexOf(notUsedEdges[nearEdge].ver1) != -1)
@@ -320,56 +206,51 @@ namespace alPrim
             return 0;
         }
 
-        private int alKrask(int[,] graph, out List<Edge> resultGraph)
+        private List<Edge> alKrask()
         {
             List<Edge> notUsedEdges = new List<Edge>();
             List<int> notUsedVertex = new List<int>();
-            List<int> usedVertex = new List<int>();
-            for (int i = 0; i < graph.GetLength(0); i++)
-            {
-                notUsedVertex.Add(i);
-                for (int j = i + 1; j < graph.GetLength(1); j++)
-                {
-                    if (graph[i, j] > graph[j, i] && graph[j, i] != 0)
-                        graph[i, j] = graph[j, i];
-                    else if (graph[i, j] != 0)
-                        graph[j, i] = graph[i, j];
-                    if (graph[i, j] != 0)
-                    {
-                        Edge edge = new Edge(i, j, graph[i, j]);
-                        notUsedEdges.Add(edge);
-                    }
-                }
-            }
+            graphConvertToListEdge(ref notUsedEdges, ref notUsedVertex);
+            
+            notUsedEdges.Sort();
 
-            resultGraph = new List<Edge>();
-            while (resultGraph.Count < numVertex-1)
+            List<SystemEdge> listOfSystem = new List<SystemEdge>() { new SystemEdge(notUsedEdges[0]) };
+            notUsedEdges.RemoveAt(0);
+            for (int i=0; i<notUsedEdges.Count;i++)
             {
-                int minEdge = 0;
-                for (int i = 1; i <notUsedEdges.Count; i++)
+                SystemEdge v1 = Find(listOfSystem, notUsedEdges[i].ver1);
+                SystemEdge v2 = Find(listOfSystem, notUsedEdges[i].ver2);
+                if (v1 == null && v2 == null)
                 {
-                    if (notUsedEdges[i].length < notUsedEdges[minEdge].length)
-                        if(notUsedVertex.IndexOf(notUsedEdges[i].ver1)!=-1 || notUsedVertex.IndexOf(notUsedEdges[i].ver2) != -1)
-                            minEdge = i;
+                    SystemEdge newSystemEdge = new SystemEdge(notUsedEdges[i]);
+                    listOfSystem.Add(newSystemEdge);
+                    continue;
                 }
-                if (notUsedVertex.IndexOf(notUsedEdges[minEdge].ver1) != -1)
+
+                if (v1 == null && v2 !=null)
+                    v2.AddEdge(notUsedEdges[i]);
+                else if (v1!=null && v2 == null)
+                    v1.AddEdge(notUsedEdges[i]);
+                else if (v1!=v2)
                 {
-                    usedVertex.Add(notUsedEdges[minEdge].ver1);
-                    notUsedVertex.Remove(notUsedEdges[minEdge].ver1);
+                    foreach (Edge edge in v2.systemEdge)
+                        v1.AddEdge(edge);
+                    v1.AddEdge(notUsedEdges[i]);
+                    listOfSystem.Remove(v2);
                 }
-                if (notUsedVertex.IndexOf(notUsedEdges[minEdge].ver2)!=-1)
-                {
-                    usedVertex.Add(notUsedEdges[minEdge].ver2);
-                    notUsedVertex.Remove(notUsedEdges[minEdge].ver2);
-                }
-                resultGraph.Add(notUsedEdges[minEdge]);
-                notUsedEdges.RemoveAt(minEdge);
             }
-            return 0;
+            return listOfSystem[0].systemEdge;
+        }
+
+        public SystemEdge Find(List<SystemEdge> systemEdge, int vertex)
+        {
+            foreach (SystemEdge system in systemEdge)
+                if (system.Contains(vertex)) return system;
+            return null;
         }
     }
 
-    public class Edge
+    public class Edge : IComparable<Edge> 
     {
         public int ver1, ver2, length;
         public Edge(int ver1, int ver2, int length)
@@ -377,6 +258,40 @@ namespace alPrim
             this.ver1 = ver1;
             this.ver2 = ver2;
             this.length = length;
+        }
+        public int CompareTo(Edge other)
+        {
+            if (other == null) return 1;
+            return length.CompareTo(other.length);
+        }
+    }
+    public class SystemEdge
+    {
+        public List<Edge> systemEdge;
+        public List<int> systemVertex;
+
+        public SystemEdge(Edge edge)
+        {
+            systemEdge = new List<Edge> { edge };
+            systemVertex = new List<int>
+            {
+                edge.ver1,
+                edge.ver2
+            };
+        }
+
+        public void AddEdge(Edge edge)
+        {
+            systemEdge.Add(edge);
+            if (!systemVertex.Contains(edge.ver1)) 
+                systemVertex.Add(edge.ver1);
+            if (!systemVertex.Contains(edge.ver2)) 
+                systemVertex.Add(edge.ver2);
+        }
+
+        public bool Contains(int vertex)
+        {
+            return systemVertex.Contains(vertex);
         }
     }
 }
